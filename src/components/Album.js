@@ -11,12 +11,13 @@ class Album extends Component {
 
         this.state = {
             album:album,
-            currentSong: album.songs[0],
-            isPlaying: false
+            currentSong: '',
+            isPlaying: false,
+            currentHoveredSong: ''
         };
 
         this.audioElement = document.createElement('audio');
-        this.audioElement.src = album.songs[0].audioSrc;
+        this.audioElement.src = '';
     }
         play() {
             this.audioElement.play();
@@ -42,7 +43,29 @@ class Album extends Component {
                 this.play();
             }
         }
-        
+
+        manageSongIcon(song,index){
+            const isSameSong = this.state.currentSong === song;
+            if (this.state.isPlaying && isSameSong){
+                return <span className='ion-ios-pause'></span>;
+            }else if (!this.state.isPlaying && isSameSong){
+                return <span className='ion-ios-play'></span>;
+            } else {
+                if (this.state.currentHoveredSong===index) {
+                    return <span className='ion-ios-play'></span>;
+                }else{
+                    return index+1;
+                }
+            }
+        }
+
+        handleSongHover(index){
+            this.setState({currentHoveredSong:index});
+        }
+
+        handleSongLeave(index){
+            this.setState({currentHoveredSong:''})
+        }
 
 
     render(){
@@ -65,8 +88,8 @@ class Album extends Component {
                     <tbody>
                         {
                             this.state.album.songs.map((song,index)=>
-                            <tr className='song' key={index} onClick={()=>this.handleSongClick(song)}>
-                                <td>{index+1}</td>
+                            <tr className='song' key={index} onClick={()=>this.handleSongClick(song)} onMouseEnter={()=>this.handleSongHover(index)} onMouseLeave={()=>this.handleSongLeave(index)}>
+                                <td>{this.manageSongIcon(song,index)}</td>
                                 <td>{song.title}</td>
                                 <td>{song.duration}</td>
                             </tr>
